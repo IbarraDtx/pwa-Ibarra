@@ -1,7 +1,6 @@
-
 const CACHE_NAME = "Cache_PWA_IBARRA";
 
-urlsToCache = [
+const urlsToCache = [
     './',
     './index.html',
     './assets/css/fnd.png',
@@ -24,8 +23,8 @@ urlsToCache = [
     './assets/vendor/icofont/icofont.min.css',
     './assets/vendor/boxicons/css/boxicons.min.css',
     './assets/vendor/venobox/venobox.css',
-    './assets/assets/vendor/owl.carousel/assets/owl.carousel.min.css',
-    './assets/assets/vendor/aos/aos.css',
+    './assets/vendor/owl.carousel/assets/owl.carousel.min.css',
+    './assets/vendor/aos/aos.css',
     './tilt.jquery.js',
     './jquery.preloadinator.min.js',
     './images/favicon1.png',
@@ -35,50 +34,44 @@ urlsToCache = [
     './images/logo512.png',
 ];
 
-//Funcion de instalacion
-//almacena el nombre y los archivos que van a ir guardados en cache
-
-self.addEventListener('install', e =>{
-    e.waitUntil( //le decimos que detenga el evento hasta que se ejecute lo siguiente
-        caches.open(CACHE_NAME)
-        .then(cache =>{
-            return cache.addAll(urlsToCache)
-            .then(() => self.skipWaiting)
-        })
-
-    )
-})
-
-self.addEventListener('activate', e =>{
-    const listaBlancaCache = [CACHE_NAME];
-
+// Evento de instalación
+self.addEventListener('install', e => {
     e.waitUntil(
-        caches.keys()
-        .then(nombresCache => {
+        caches.open(CACHE_NAME).then(cache => {
+            return cache.addAll(urlsToCache).then(() => self.skipWaiting());
+        })
+    );
+});
+
+// Evento de activación
+self.addEventListener('activate', e => {
+    const listaBlancaCache = [CACHE_NAME];
+    e.waitUntil(
+        caches.keys().then(existingCaches => {
             return Promise.all(
-                nombresCache.map(nombresCache =>{
-                    if(listaBlancaCache.indexOf(nombresCache) === -1){
-                        return caches.delete(nombresCache)
+                existingCaches.map(cacheName => {
+                    if (listaBlancaCache.indexOf(cacheName) === -1) {
+                        return caches.delete(cacheName);
                     }
                 })
-            )
-        })
-        //activamos la cache actualizada
-        .then(()=> self.clients.claim())
-    )
+            );
+        }).then(() => self.clients.claim())
+    );
+});
 
-})
-
-
-self.addEventListener('fetch', e =>{
+// Evento de fetch
+self.addEventListener('fetch', e => {
     e.respondWith(
-        caches.match(e.request)
-        .then(res =>{
-            if(res)
-            {
-                return res
+        caches.match(e.request).then(cachedResponse => {
+            if (cachedResponse) {
+                return cachedResponse;
             }
-            return fetch(e.request)
+            return fetch(e.request).then(networkResponse => {
+                return caches.open(CACHE_NAME).then(cache => {
+                    cache.put(e.request, networkResponse.clone());
+                    return networkResponse;
+                });
+            });
         })
-    )
-})
+    );
+});
