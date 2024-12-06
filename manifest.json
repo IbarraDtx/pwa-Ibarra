@@ -1,6 +1,6 @@
 {
-    "name": "APP Portfolio",
-    "short_name": "Portfolio",
+    "name": "PWA - IBARRA",
+    "short_name": "pwa-portafolio",
     "start_url": ".",
     "background_color": "#8243f6",
     "theme_color": "#0d00ff",
