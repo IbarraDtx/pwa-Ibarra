@@ -1,4 +1,5 @@
-const CACHE_NAME = "V1_cache_PWA_IBARRA";
+
+const CACHE_NAME = "Cache_PWA_IBARRA";
 
 urlsToCache = [
     './',
@@ -8,7 +9,6 @@ urlsToCache = [
     './assets/css/style.min.css',
     './assets/js/github.js',
     './assets/js/main.js',
-    './assets/js/particles.js',
     './assets/vendor/jquery/jquery.min.js',
     './assets/vendor/bootstrap/js/bootstrap.bundle.min.js',
     './assets/vendor/jquery.easing/jquery.easing.min.js',
@@ -35,9 +35,11 @@ urlsToCache = [
     './images/logo512.png',
 ];
 
+//Funcion de instalacion
+//almacena el nombre y los archivos que van a ir guardados en cache
 
 self.addEventListener('install', e =>{
-    e.waitUntil(
+    e.waitUntil( //le decimos que detenga el evento hasta que se ejecute lo siguiente
         caches.open(CACHE_NAME)
         .then(cache =>{
             return cache.addAll(urlsToCache)
@@ -61,6 +63,7 @@ self.addEventListener('activate', e =>{
                 })
             )
         })
+        //activamos la cache actualizada
         .then(()=> self.clients.claim())
     )
 
